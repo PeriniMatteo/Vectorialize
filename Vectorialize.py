@@ -15,7 +15,7 @@ print xm,ym
 n=10
 xp=range(0,xm,n)
 yp=range(0,ym,n)
-
+print len(xp),len(yp)
 m=np.zeros((len(xp)-1,len(yp)-1))
 #mx=np.zeros((len(xp)-1,len(yp)-1))
 #my=np.zeros((len(xp)-1,len(yp)-1))
@@ -27,11 +27,10 @@ for i in range(len(xp))[:-1]:
 im= Image.fromarray(m)
 im.convert('L').save('t.jpg')
 
-def writeLine(X0,Y0,X1,Y1,filedest):
-    #out_file.write('  <g\n')
+def writeLine(X0,Y0,W,H,filedest):
     filedest.write('        <path\n')
     filedest.write('       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"\n')
-    filedest.write('       d="m %.3f,%.3f %.3f,%.3f"\n'%(X0,Y0,X1,Y1))
+    filedest.write('       d="m %.3f,%.3f %.3f,%.3f"\n'%(X0,Y0,W,H))
     filedest.write('       inkscape:connector-curvature="0" />\n')
 
 def draw_horizontal():
@@ -59,7 +58,126 @@ def draw_vertical():
                 start=False
             else:
                 pass
+                
+def draw_obl1():
+    global start
+    
+    for j in range(1,len(xp[:-1])):
+        i=j
+        j=0
+        while i<len(xp[:-1]):
+            print j,i
+            if j==len(xp[:-1]):
+                start=False
+                break
+            if m[i,j]<= 128 and not(start):
+                print "1"
+                start_i=i
+                start_j=j
+                i+=1
+                j+=1
+                start=True
+            elif m[i,j]>128 and start:
+                print "2"
+                stop_i=i
+                stop_j=j
+                writeLine(start_j*n,start_i*n,(stop_j-start_j)*n,(stop_i-start_i)*n,out_file)
+                start=False
+                i+=1
+                j+=1
+            else:
+                #print "else"
+                #pass
+                i+=1
+                j+=1
 
+    for j in range(len(yp[:-1])):
+        i=0
+        while i<len(xp[:-1]):
+            #print j,i
+            if j==len(yp[:-1]):
+                start=False
+                break
+            if m[i,j]<= 128 and not(start):
+                #print "1"
+                start_i=i
+                start_j=j
+                i+=1
+                j+=1
+                start=True
+            elif m[i,j]>128 and start:
+                #print "2"
+                stop_i=i
+                stop_j=j
+                writeLine(start_j*n,start_i*n,(stop_j-start_j)*n,(stop_i-start_i)*n,out_file)
+                start=False
+                i+=1
+                j+=1
+            else:
+                #print "else"
+                #pass
+                i+=1
+                j+=1
+
+def draw_obl2():
+    global start
+    
+    for j in range(1,len(xp[:-1])):
+        i=j
+        j=len(xp[:-1])
+        while i<len(xp[:-1]):
+            print j,i
+            if j>len(xp[:-1]):
+                start=False
+                break
+            if m[i,j]<= 128 and not(start):
+                print "1"
+                start_i=i
+                start_j=j
+                i+=1
+                j-=1
+                start=True
+            elif m[i,j]>128 and start:
+                print "2"
+                stop_i=i
+                stop_j=j
+                writeLine(start_j*n,start_i*n,(stop_j-start_j)*n,(stop_i-start_i)*n,out_file)
+                start=False
+                i+=1
+                j-=1
+            else:
+                #print "else"
+                #pass
+                i+=1
+                j-=1
+
+    for j in range(len(yp[:-1])):
+        i=0
+        while i<len(xp[:-1]):
+            #print j,i
+            if j<0:
+                start=False
+                break
+            if m[i,j]<= 128 and not(start):
+                #print "1"
+                start_i=i
+                start_j=j
+                i+=1
+                j-=1
+                start=True
+            elif m[i,j]>128 and start:
+                #print "2"
+                stop_i=i
+                stop_j=j
+                writeLine(start_j*n,start_i*n,(stop_j-start_j)*n,(stop_i-start_i)*n,out_file)
+                start=False
+                i+=1
+                j-=1
+            else:
+                #print "else"
+                #pass
+                i+=1
+                j-=1
 
 #im=Image.new("L",(ym,xm),color="black")
 #draw = ImageDraw.Draw(im)
@@ -101,21 +219,7 @@ out_file.write('     inkscape:document-units="px"\n')
 out_file.write('     inkscape:current-layer="layer1"\n')
 out_file.write('     />\n')
 
-
-'''maxx=float(240)
-for j in range(len(yp))[:-1]:
-    for i in range(len(xp))[:-1]:
-        
-        if (maxx-m[i,j])*float(n)/maxx>0.7:
-            out_file.write('<path\n')
-            out_file.write('sodipodi:type="arc"\n')
-            out_file.write('style="fill:#000000;fill-opacity:1;stroke:none"\n')
-            out_file.write('sodipodi:cx="'+str(my[i,j])+'"\n')
-            out_file.write('sodipodi:cy="'+str(mx[i,j])+'"\n')
-            out_file.write('sodipodi:rx="'+str((maxx-m[i,j])*float(n)/maxx)+'"\n')
-            out_file.write('sodipodi:ry="'+str((maxx-m[i,j])*float(n)/maxx)+'"/>\n')
-        
-'''
+# Drawing the horizontal lines
 out_file.write('  <g\n')
 out_file.write('     inkscape:label="Horizontal"\n')
 out_file.write('     inkscape:groupmode="layer"\n')
@@ -123,6 +227,7 @@ out_file.write('     id="layer1">\n')
 draw_horizontal()
 out_file.write('  </g>\n')
 
+# Drawing the vertical lines
 out_file.write('  <g\n')
 out_file.write('     inkscape:label="Vertical"\n')
 out_file.write('     inkscape:groupmode="layer"\n')
@@ -130,8 +235,20 @@ out_file.write('     id="layer2">\n')
 draw_vertical()
 out_file.write('  </g>\n')
 
-
-
+# Drawing the obliquos lines
+out_file.write('  <g\n')
+out_file.write('     inkscape:label="Obl"\n')
+out_file.write('     inkscape:groupmode="layer"\n')
+out_file.write('     id="layer3">\n')
+draw_obl1()
+out_file.write('  </g>\n')
+# Drawing the obliquos inverse lines 
+out_file.write('  <g\n')
+out_file.write('     inkscape:label="Obl"\n')
+out_file.write('     inkscape:groupmode="layer"\n')
+out_file.write('     id="layer3">\n')
+draw_obl2()
+out_file.write('  </g>\n')
 
 
 out_file.write('</svg>')
