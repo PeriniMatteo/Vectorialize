@@ -5,7 +5,7 @@ global n,xp,yp,m, start
 
 start=False
 
-imm=Image.open('Beaa.jpg').convert('L')
+imm=Image.open('Bea.jpg').convert('L')
 #imm.show()
 
 b=np.asarray(imm)
@@ -37,9 +37,9 @@ def draw_horizontal():
     global start
     for j in range(len(xp))[:-1]:
         for i in range(len(yp))[:-1]:
-            if m[j,i]<= 128 and not(start):
+            if m[j,i]<= 200 and not(start):
                 start=i
-            elif m[j,i]>128 and start:
+            elif m[j,i]>200 and start:
                 stop=i
                 writeLine(start*n,j*n,(stop-start)*n,0,out_file)
                 start=False
@@ -50,9 +50,9 @@ def draw_vertical():
     global start
     for j in range(len(yp))[:-1]:
         for i in range(len(xp))[:-1]:
-            if m[i,j]<= 128 and not(start):
+            if m[i,j]<= 150 and not(start):
                 start=i
-            elif m[i,j]>128 and start:
+            elif m[i,j]>150 and start:
                 stop=i
                 writeLine(j*n,start*n,0,(stop-start)*n,out_file)
                 start=False
@@ -70,14 +70,14 @@ def draw_obl1():
             if j==len(xp[:-1]):
                 start=False
                 break
-            if m[i,j]<= 128 and not(start):
+            if m[i,j]<= 100 and not(start):
                 print "1"
                 start_i=i
                 start_j=j
                 i+=1
                 j+=1
                 start=True
-            elif m[i,j]>128 and start:
+            elif m[i,j]>100 and start:
                 print "2"
                 stop_i=i
                 stop_j=j
@@ -98,14 +98,14 @@ def draw_obl1():
             if j==len(yp[:-1]):
                 start=False
                 break
-            if m[i,j]<= 128 and not(start):
+            if m[i,j]<= 100 and not(start):
                 #print "1"
                 start_i=i
                 start_j=j
                 i+=1
                 j+=1
                 start=True
-            elif m[i,j]>128 and start:
+            elif m[i,j]>100 and start:
                 #print "2"
                 stop_i=i
                 stop_j=j
@@ -130,14 +130,14 @@ def draw_obl2():
             if j>len(xp[:-1]):
                 start=False
                 break
-            if m[i,j]<= 128 and not(start):
+            if m[i,j]<= 50 and not(start):
                 print "1"
                 start_i=i
                 start_j=j
                 i+=1
                 j-=1
                 start=True
-            elif m[i,j]>128 and start:
+            elif m[i,j]>50 and start:
                 print "2"
                 stop_i=i
                 stop_j=j
@@ -158,14 +158,14 @@ def draw_obl2():
             if j<0:
                 start=False
                 break
-            if m[i,j]<= 128 and not(start):
+            if m[i,j]<= 50 and not(start):
                 #print "1"
                 start_i=i
                 start_j=j
                 i+=1
                 j-=1
                 start=True
-            elif m[i,j]>128 and start:
+            elif m[i,j]>50 and start:
                 #print "2"
                 stop_i=i
                 stop_j=j
@@ -237,16 +237,16 @@ out_file.write('  </g>\n')
 
 # Drawing the obliquos lines
 out_file.write('  <g\n')
-out_file.write('     inkscape:label="Obl"\n')
+out_file.write('     inkscape:label="Obl1"\n')
 out_file.write('     inkscape:groupmode="layer"\n')
 out_file.write('     id="layer3">\n')
 draw_obl1()
 out_file.write('  </g>\n')
 # Drawing the obliquos inverse lines 
 out_file.write('  <g\n')
-out_file.write('     inkscape:label="Obl"\n')
+out_file.write('     inkscape:label="Obl2"\n')
 out_file.write('     inkscape:groupmode="layer"\n')
-out_file.write('     id="layer3">\n')
+out_file.write('     id="layer4">\n')
 draw_obl2()
 out_file.write('  </g>\n')
 
