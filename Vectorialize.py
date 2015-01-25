@@ -1,9 +1,13 @@
 import Image, ImageDraw
 import numpy as np
 
-imm=Image.open('Beaa.jpg').convert('L')
+global n,xp,yp,m, start
 
+start=False
+
+imm=Image.open('Beaa.jpg').convert('L')
 #imm.show()
+
 b=np.asarray(imm)
 xm,ym=b.shape
 print xm,ym
@@ -19,9 +23,7 @@ print m.shape
 for i in range(len(xp))[:-1]:
     for j in range(len(yp))[:-1]:
         m[i,j]=int(b[xp[i]:xp[i+1],yp[j]:yp[j+1]].mean())
-#        mx[i,j]=(xp[i]+xp[i+1])/2
-#        my[i,j]=(yp[j]+yp[j+1])/2
-#print len(xp)*len(yp)
+
 im= Image.fromarray(m)
 im.convert('L').save('t.jpg')
 
@@ -31,6 +33,34 @@ def writeLine(X0,Y0,X1,Y1,filedest):
     filedest.write('       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"\n')
     filedest.write('       d="m %.3f,%.3f %.3f,%.3f"\n'%(X0,Y0,X1,Y1))
     filedest.write('       inkscape:connector-curvature="0" />\n')
+
+def draw_horizontal():
+    global start
+    for j in range(len(xp))[:-1]:
+        for i in range(len(yp))[:-1]:
+            if m[j,i]<= 128 and not(start):
+                start=i
+            elif m[j,i]>128 and start:
+                stop=i
+                writeLine(start*n,j*n,(stop-start)*n,0,out_file)
+                start=False
+            else:
+                pass
+                
+def draw_vertical():
+    global start
+    for j in range(len(yp))[:-1]:
+        for i in range(len(xp))[:-1]:
+            if m[i,j]<= 128 and not(start):
+                start=i
+            elif m[i,j]>128 and start:
+                stop=i
+                writeLine(j*n,start*n,0,(stop-start)*n,out_file)
+                start=False
+            else:
+                pass
+
+
 #im=Image.new("L",(ym,xm),color="black")
 #draw = ImageDraw.Draw(im)
 ####im= Image.fromarray(m)
@@ -87,30 +117,22 @@ for j in range(len(yp))[:-1]:
         
 '''
 out_file.write('  <g\n')
-out_file.write('     inkscape:label="Livello 1"\n')
+out_file.write('     inkscape:label="Horizontal"\n')
 out_file.write('     inkscape:groupmode="layer"\n')
-out_file.write('     id="layer1"\n')
-out_file.write('     >\n')
-start=False
-for j in range(len(xp))[:-1]:
-    for i in range(len(yp))[:-1]:
-        if m[j,i]<= 128 and not(start):
-            start=i
-        #elif m[i,j]>=128 and start:
-        #    stop=i
-        elif m[j,i]>128 and start:
-            stop=i
-            writeLine(start*n,j*n,(stop-start)*n,0,out_file)
-            start=False
-        else:
-            pass
-            
-        #writeLine(,j*n,ym,1,out_file)    
+out_file.write('     id="layer1">\n')
+draw_horizontal()
+out_file.write('  </g>\n')
+
+out_file.write('  <g\n')
+out_file.write('     inkscape:label="Vertical"\n')
+out_file.write('     inkscape:groupmode="layer"\n')
+out_file.write('     id="layer2">\n')
+draw_vertical()
+out_file.write('  </g>\n')
 
 
 
 
 
-out_file.write('  </g>')
 out_file.write('</svg>')
 out_file.close()
