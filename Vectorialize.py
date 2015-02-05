@@ -5,14 +5,14 @@ global n,xp,yp,m, start
 
 start=False
 LEVELS=[200,150,100,50]
-imm=Image.open('Bea.jpg').convert('L')
+imm=Image.open('don.jpg').convert('L')
 #imm.show()
 
 b=np.asarray(imm)
 xm,ym=b.shape
 print xm,ym
 
-n=10
+n=5
 xp=range(0,xm,n)
 yp=range(0,ym,n)
 print "len(xp) = ",len(xp)
@@ -28,7 +28,8 @@ for i,xx in enumerate(xp):
 
 #m[10:20,30:100]=0
 #b=(m>200)*255
-im= Image.fromarray((m>LEVELS[2])*255.0)
+#im= Image.fromarray((m>LEVELS[3])*255.0)
+im= Image.fromarray(m)
 im.convert('L').save('t.jpg')
 
 def writeLine(X0,Y0,W,H,filedest):
@@ -50,7 +51,7 @@ def draw_horizontal():
                 stop=xx
                 writeLine(start,yy,(stop-start),0,out_file)
             elif m[j,i]>LEVELS[0] and start:
-                stop=xx-1
+                stop=xx
                 writeLine(start,yy,(stop-start),0,out_file)
                 #print "writeLine("+str(start*n)+","+str((j-1)*n)+","+str((stop-start)*n)+",0,out_file)"
                 start=False
@@ -70,7 +71,7 @@ def draw_vertical():
                 stop=xx
                 writeLine(yy,start,0,(stop-start),out_file)
             elif m[i,j]>LEVELS[1] and start:
-                stop=xx-1
+                stop=xx
                 writeLine(yy,start,0,(stop-start),out_file)
                 start=False
                 stop=False
@@ -83,63 +84,77 @@ def draw_obl1():
     for j,yy in enumerate(xp):
         i=j
         j=0
-        sotp=False
-        while i<len(xp[:-1]):
-            print j,i
-            if j==len(xp[:-1]):
-                start=False
-                break
-            if m[i,j]<= 100 and not(start):
-                print "1"
-                start_i=i
-                start_j=j
-                i+=1
-                j+=1
-                start=True
-            elif m[i,j]>100 and start:
-                print "2"
-                stop_i=i
-                stop_j=j
-                writeLine(start_j*n,start_i*n,(stop_j-start_j)*n,(stop_i-start_i)*n,out_file)
-                start=False
-                i+=1
-                j+=1
-            else:
-                #print "else"
-                #pass
-                i+=1
-                j+=1
-
-    for j in range(len(yp[:-1])):
-        i=0
-        stop=False
-        while i<len(xp[:-1]):
-            #print j,i
-            if j==len(yp[:-1]):
-                start=False
-                break
-            if m[i,j]<= 100 and not(start):
+        while i<len(xp):
+            if m[i,j]<= LEVELS[2] and not(start):
                 #print "1"
                 start_i=i
                 start_j=j
                 i+=1
                 j+=1
                 start=True
-            elif m[i,j]>100 and start:
+            elif m[i,j]>LEVELS[2] and start:
                 #print "2"
                 stop_i=i
                 stop_j=j
                 writeLine(start_j*n,start_i*n,(stop_j-start_j)*n,(stop_i-start_i)*n,out_file)
                 start=False
+                stop_i=False
+                stop_j=False
                 i+=1
                 j+=1
             else:
-                #print "else"
-                #pass
                 i+=1
                 j+=1
+        else:
+            if start:
+                stop_i=i
+                stop_j=j
+                writeLine(start_j*n,start_i*n,(stop_j-start_j)*n,(stop_i-start_i)*n,out_file)
+                start=False
+                stop_i=False
+                stop_j=False
+            else:
+                start=False
+                stop_i=False
+                stop_j=False
 
-def draw_obl2():
+    for j in range(1,len(yp[:-1])):
+        i=0
+        while i<len(xp) and j<len(yp):
+            if m[i,j]<= LEVELS[2] and not(start):
+                #print 
+                start_i=i
+                start_j=j
+                i+=1
+                j+=1
+                start=True
+            elif m[i,j]>LEVELS[2] and start:
+                #print "2"
+                stop_i=i
+                stop_j=j
+                writeLine(start_j*n,start_i*n,(stop_j-start_j)*n,(stop_i-start_i)*n,out_file)
+                start=False
+                stop_i=False
+                stop_j=False
+                i+=1
+                j+=1
+            else:
+                i+=1
+                j+=1
+        else:
+            if start:
+                stop_i=i
+                stop_j=j
+                writeLine(start_j*n,start_i*n,(stop_j-start_j)*n,(stop_i-start_i)*n,out_file)
+                start=False
+                stop_i=False
+                stop_j=False
+            else:
+                start=False
+                stop_i=False
+                stop_j=False
+
+def draw_obl3():
     global start
     
     for j in range(1,len(xp[:-1])):
@@ -198,6 +213,80 @@ def draw_obl2():
                 #pass
                 i+=1
                 j-=1
+def draw_obl2():
+    global start
+    for j,yy in enumerate(yp):
+        i=j
+        j=len(yp[:-1])
+        while i<len(xp):
+            if m[i,j]<= LEVELS[3] and not(start):
+                #print "1"
+                start_i=i
+                start_j=j
+                i+=1
+                j+=-1
+                start=True
+            elif m[i,j]>LEVELS[3] and start:
+                #print "2"
+                stop_i=i
+                stop_j=j
+                writeLine(start_j*n,start_i*n,(stop_j-start_j)*n,(stop_i-start_i)*n,out_file)
+                start=False
+                stop_i=False
+                stop_j=False
+                i+=1
+                j+=-1
+            else:
+                i+=1
+                j+=-1
+        else:
+            if start:
+                stop_i=i
+                stop_j=j
+                writeLine(start_j*n,start_i*n,(stop_j-start_j)*n,(stop_i-start_i)*n,out_file)
+                start=False
+                stop_i=False
+                stop_j=False
+            else:
+                start=False
+                stop_i=False
+                stop_j=False
+
+    for j in range(1,len(yp[:-1])):
+        i=0
+        while i<len(xp) and j<len(yp):
+            if m[i,j]<= LEVELS[3] and not(start):
+                #print 
+                start_i=i
+                start_j=j
+                i+=1
+                j+=-1
+                start=True
+            elif m[i,j]>LEVELS[3] and start:
+                #print "2"
+                stop_i=i
+                stop_j=j
+                writeLine(start_j*n,start_i*n,(stop_j-start_j)*n,(stop_i-start_i)*n,out_file)
+                start=False
+                stop_i=False
+                stop_j=False
+                i+=1
+                j+=-1
+            else:
+                i+=1
+                j+=-1
+        else:
+            if start:
+                stop_i=i
+                stop_j=j
+                writeLine(start_j*n,start_i*n,(stop_j-start_j)*n,(stop_i-start_i)*n,out_file)
+                start=False
+                stop_i=False
+                stop_j=False
+            else:
+                start=False
+                stop_i=False
+                stop_j=False
 
 #im=Image.new("L",(ym,xm),color="black")
 #draw = ImageDraw.Draw(im)
@@ -244,7 +333,7 @@ out_file.write('  <g\n')
 out_file.write('     inkscape:label="Horizontal"\n')
 out_file.write('     inkscape:groupmode="layer"\n')
 out_file.write('     id="layer1">\n')
-#draw_horizontal()
+draw_horizontal()
 out_file.write('  </g>\n')
 
 # Drawing the vertical lines
@@ -252,7 +341,7 @@ out_file.write('  <g\n')
 out_file.write('     inkscape:label="Vertical"\n')
 out_file.write('     inkscape:groupmode="layer"\n')
 out_file.write('     id="layer2">\n')
-#draw_vertical()
+draw_vertical()
 out_file.write('  </g>\n')
 
 # Drawing the obliquos lines
@@ -262,7 +351,7 @@ out_file.write('     inkscape:groupmode="layer"\n')
 out_file.write('     id="layer3">\n')
 draw_obl1()
 out_file.write('  </g>\n')
-'''
+
 # Drawing the obliquos inverse lines 
 out_file.write('  <g\n')
 out_file.write('     inkscape:label="Obl2"\n')
@@ -271,6 +360,6 @@ out_file.write('     id="layer4">\n')
 draw_obl2()
 out_file.write('  </g>\n')
 
-'''
+
 out_file.write('</svg>')
 out_file.close()
