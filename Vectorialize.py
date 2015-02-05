@@ -154,65 +154,7 @@ def draw_obl1():
                 stop_i=False
                 stop_j=False
 
-def draw_obl3():
-    global start
-    
-    for j in range(1,len(xp[:-1])):
-        i=j
-        j=len(xp[:-1])
-        while i<len(xp[:-1]):
-            print j,i
-            if j>len(xp[:-1]):
-                start=False
-                break
-            if m[i,j]<= 50 and not(start):
-                print "1"
-                start_i=i
-                start_j=j
-                i+=1
-                j-=1
-                start=True
-            elif m[i,j]>50 and start:
-                print "2"
-                stop_i=i
-                stop_j=j
-                writeLine(start_j*n,start_i*n,(stop_j-start_j)*n,(stop_i-start_i)*n,out_file)
-                start=False
-                i+=1
-                j-=1
-            else:
-                #print "else"
-                #pass
-                i+=1
-                j-=1
 
-    for j in range(len(yp[:-1])):
-        i=0
-        while i<len(xp[:-1]):
-            #print j,i
-            if j<0:
-                start=False
-                break
-            if m[i,j]<= 50 and not(start):
-                #print "1"
-                start_i=i
-                start_j=j
-                i+=1
-                j-=1
-                start=True
-            elif m[i,j]>50 and start:
-                #print "2"
-                stop_i=i
-                stop_j=j
-                writeLine(start_j*n,start_i*n,(stop_j-start_j)*n,(stop_i-start_i)*n,out_file)
-                start=False
-                i+=1
-                j-=1
-            else:
-                #print "else"
-                #pass
-                i+=1
-                j-=1
 def draw_obl2():
     global start
     for j,yy in enumerate(yp):
